@@ -1,0 +1,14 @@
+.footer {
+    position: absolute; /* 고정 위치 설정 */
+    left: 0;
+    right: 0;
+    bottom: 0; /* 항상 하단에 위치 */
+    width: 100%;
+    padding: 10px 0;
+    text-align: center;
+    background-color: #333; /* 배경색 */
+    color: #fff; /* 글자색 */
+    font-size: 0.8em; /* 작은 글씨 */
+    display: block; /* 기본적으로 보이게 설정 */
+    transition: transform 0.3s ease; /* 부드러운 애니메이션 효과 */
+}
