@@ -1,10 +1,13 @@
 package com.shop_cafe.entity;
 
 import com.shop_cafe.constant.ItemSellStatus;
+import com.shop_cafe.dto.ItemFormDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.List;
 
 @Entity
 @Table(name = "item")
@@ -26,7 +29,24 @@ public class Item extends BaseEntity{
     private int stockNumber; // 수량
     @Lob
     @Column(nullable = false)
-    private String itemDetail; //상품상세 설명
+    private String itemDtl; //상품상세 설명
     @Enumerated(EnumType.STRING)
     private ItemSellStatus itemSellStatus; //상품판매 상태
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name="member_item",
+            joinColumns = @JoinColumn(name = "member_id"),
+            inverseJoinColumns = @JoinColumn(name = "item_id")
+    )
+    private List<Member> member;
+
+    public void updateItem(ItemFormDto itemFormDto){
+        this.itemNm = itemFormDto.getItemNm();
+        this.categoryId=itemFormDto.getCategoryId();
+        this.price = itemFormDto.getPrice();
+        this.stockNumber = itemFormDto.getStockNumber();
+        this.itemDtl = itemFormDto.getItemDtl();
+        this.itemSellStatus = itemFormDto.getItemSellStatus();
+    }
 }

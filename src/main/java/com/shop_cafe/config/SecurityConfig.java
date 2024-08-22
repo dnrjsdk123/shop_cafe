@@ -33,6 +33,8 @@ public class SecurityConfig {
                 .failureUrl("/members/login/error")
         );
 
+        http.exceptionHandling(exception -> exception
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
         return http.build();
     }
 
