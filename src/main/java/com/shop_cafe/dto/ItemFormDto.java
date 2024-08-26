@@ -27,7 +27,7 @@ public class ItemFormDto {
     private Integer price;
 
     @NotBlank(message = "이름은 필수 입력 값입니다.")
-    private  String itemDtl;
+    private  String itemDetail;
 
     @NotNull(message = "재고는 필수 입력 값입니다.")
     private Integer stockNumber;

@@ -3,12 +3,15 @@ package com.shop_cafe.service;
 import com.shop_cafe.dto.ItemDto;
 import com.shop_cafe.dto.ItemFormDto;
 import com.shop_cafe.dto.ItemImgDto;
+import com.shop_cafe.dto.ItemSearchDto;
 import com.shop_cafe.entity.Item;
 import com.shop_cafe.entity.ItemImg;
 import com.shop_cafe.repository.ItemImgRepository;
 import com.shop_cafe.repository.ItemRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -76,5 +79,10 @@ public class ItemService {
             itemImgService.updateItemImg(itemImgIds.get(i), itemImgFileList.get(i));
         }
         return item.getId();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Item> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable){
+        return itemRepository.getAdminItemPage(itemSearchDto,pageable);
     }
 }

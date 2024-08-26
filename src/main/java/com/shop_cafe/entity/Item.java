@@ -29,7 +29,7 @@ public class Item extends BaseEntity{
     private int stockNumber; // 수량
     @Lob
     @Column(nullable = false)
-    private String itemDtl; //상품상세 설명
+    private String itemDetail; //상품상세 설명
     @Enumerated(EnumType.STRING)
     private ItemSellStatus itemSellStatus; //상품판매 상태
 
@@ -46,7 +46,7 @@ public class Item extends BaseEntity{
         this.categoryId=itemFormDto.getCategoryId();
         this.price = itemFormDto.getPrice();
         this.stockNumber = itemFormDto.getStockNumber();
-        this.itemDtl = itemFormDto.getItemDtl();
+        this.itemDetail = itemFormDto.getItemDetail();
         this.itemSellStatus = itemFormDto.getItemSellStatus();
     }
 }
