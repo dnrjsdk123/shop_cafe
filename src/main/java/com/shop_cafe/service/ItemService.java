@@ -1,9 +1,6 @@
 package com.shop_cafe.service;
 
-import com.shop_cafe.dto.ItemDto;
-import com.shop_cafe.dto.ItemFormDto;
-import com.shop_cafe.dto.ItemImgDto;
-import com.shop_cafe.dto.ItemSearchDto;
+import com.shop_cafe.dto.*;
 import com.shop_cafe.entity.Item;
 import com.shop_cafe.entity.ItemImg;
 import com.shop_cafe.repository.ItemImgRepository;
@@ -84,5 +81,10 @@ public class ItemService {
     @Transactional(readOnly = true)
     public Page<Item> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable){
         return itemRepository.getAdminItemPage(itemSearchDto,pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<MainItemDto> getMainItemPage(ItemSearchDto itemSearchDto, Pageable pageable) {
+        return itemRepository.getMainItemPage(itemSearchDto, pageable);
     }
 }
