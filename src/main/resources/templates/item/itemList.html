@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+<head>
+    <th:block layout:fragment="css">
+        <style>
+            /* 필요한 추가 스타일이 있으면 여기에 추가 */
+        </style>
+    </th:block>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="container text-center">
+        <div class="row row-cols-5">
+            <th:block th:each="itemDto, status: ${itemPage.content}">
+                <div class="col">
+                    <div class="card">
+                        <a th:href="@{'/item/' + ${itemDto.id}}" class="text-dark">
+                            <img th:src="${itemDto.itemImgDtoList[0].imgUrl}" class="card-img-top" th:alt="${itemDto.itemNm}" height="400">
+                            <div class="card-body">
+                                <h4 class="card-title" th:text="${itemDto.itemNm}"></h4>
+                                <p class="card-text" th:text="${itemDto.itemDetail}"></p>
+                                <h3 class="card-title text-danger" th:text="${itemDto.price + '원'}"></h3>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </div>
+
+    <!-- 페이지 네비게이션 -->
+    <div>
+        <ul>
+            <li th:if="${itemPage.hasPrevious()}">
+                <a th:href="@{/items(categoryId=${categoryId}, page=${itemPage.number - 1}, size=${itemPage.size})}">Previous</a>
+            </li>
+            <li th:if="${itemPage.hasNext()}">
+                <a th:href="@{/items(categoryId=${categoryId}, page=${itemPage.number + 1}, size=${itemPage.size})}">Next</a>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

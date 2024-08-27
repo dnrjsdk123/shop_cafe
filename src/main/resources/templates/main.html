@@ -2,50 +2,78 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout1}">
-<!-- 사용자 CSS 추가 -->
-
-<th:block layout:fragment="css">
-    <style>
-        .carousel-inner > .item {
-            height : 350px;
-        }
-        .margin{
-            margin-bottom : 30px;
-        }
-        body{
-            min-height: 100%;
-            padding: 0px;
-
-        }
-        .banner{
-            height : 500px;
-            position :  absolute; top:0; left:0;
-            width: 100%;
-            height: 100%;
-        }
-        .card-text{
-            text-overflow : ellipsis;
-            white-space : nowrap;
-            overflow : hidden;
-        }
-        a:hover{
-            text-decoration:none;
-        }
-        .center{
-            text-align:center;
-        }
-    </style>
-</th:block>
-
+<head>
+    <!-- 사용자 CSS 추가 -->
+    <th:block layout:fragment="css">
+        <style>
+            body {
+                min-height: 100%;
+                padding: 0;
+            }
+            .slider {
+                position: relative;
+                width: 100%;
+                max-width: 1920px; /* 최대 너비 1920px */
+                height: 500px; /* 슬라이드 배너의 높이 */
+                margin: auto;
+                overflow: hidden;
+            }
+            .slides {
+                display: flex;
+                transition: transform 0.5s ease-in-out;
+                height: 100%; /* 슬라이드 배너의 높이에 맞게 조정 */
+            }
+            .slide {
+                min-width: 100%;
+                box-sizing: border-box;
+                height: 100%; /* 슬라이드 배너의 높이에 맞게 조정 */
+            }
+            .slide img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover; /* 이미지 비율 유지하면서 크기 조절 */
+            }
+            .prev, .next {
+                cursor: pointer;
+                position: absolute;
+                top: 50%;
+                width: auto;
+                padding: 16px;
+                color: white;
+                font-weight: bold;
+                font-size: 18px;
+                border-radius: 0 3px 3px 0;
+                user-select: none;
+                background-color: rgba(0,0,0,0.5);
+            }
+            .next {
+                right: 0;
+                border-radius: 3px 0 0 3px;
+            }
+            .prev:hover, .next:hover {
+                background-color: rgba(0,0,0,0.8);
+            }
+        </style>
+    </th:block>
+</head>
+<body>
 <div layout:fragment="content">
-
-    <div id="carouselControls" class="carousel slide margin" data-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active item">
-                <img src="https://user-images.githubusercontent.com/13268420/112147492-1ab76200-8c20-11eb-8649-3d2f282c3c02.png"
-                     class="d-block w-100 banner" alt="First slide">
+    <div class="slider">
+        <div class="slides">
+            <!-- 원본 슬라이드 -->
+            <div class="slide">
+                <img src="https://via.placeholder.com/1920x500?text=Slide+1" alt="Slide 1">
             </div>
+            <div class="slide">
+                <img src="https://via.placeholder.com/1920x500?text=Slide+2" alt="Slide 2">
+            </div>
+            <div class="slide">
+                <img src="https://via.placeholder.com/1920x500?text=Slide+3" alt="Slide 3">
+            </div>
+            <!-- 복제된 슬라이드 -->
         </div>
+        <a class="prev">&#10094;</a>
+        <a class="next">&#10095;</a>
     </div>
 
     <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
@@ -58,8 +86,7 @@
                 <div class="col">
                     <div class="card">
                         <a th:href="'/item/' + ${item.id}" class="text-dark">
-                            <img th:src="${item.imgUrl}" class="card-img-top" th:alt="${item.itemNm}"
-                                 height="400">
+                            <img th:src="${item.imgUrl}" class="card-img-top" th:alt="${item.itemNm}" height="400">
                             <div class="card-body">
                                 <h4 class="card-title">[[${item.itemNm}]]</h4>
                                 <p class="card-text">[[${item.itemDetail}]]</p>
@@ -72,8 +99,8 @@
         </div>
     </div>
     <div th:with="start=${(items.number/maxPage)*maxPage +1},
-        end=(${(items.totalPages == 0) ? 1 : (start + (maxPage-1) < items.totalPages ?
-        start + (maxPage - 1) : items.totalPages)})">
+            end=(${(items.totalPages == 0) ? 1 : (start + (maxPage-1) < items.totalPages ?
+            start + (maxPage - 1) : items.totalPages)})">
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${items.number eq 0}?'disabled'">
                 <a th:href="@{'/' + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number-1}}"
@@ -95,3 +122,52 @@
         </ul>
     </div>
 </div>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelector('.slides');
+            const slideCount = document.querySelectorAll('.slide').length;
+            const slideWidth = document.querySelector('.slide').offsetWidth;
+            let currentIndex = 0;
+
+            function showSlide(index) {
+                if (index >= slideCount) {
+                    slides.style.transition = 'none'; // 전환 효과 비활성화
+                    currentIndex = 0;
+                    slides.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+                    // 다음 애니메이션에서 다시 활성화
+                    setTimeout(() => {
+                        slides.style.transition = 'transform 0.5s ease-in-out';
+                    }, 50);
+                } else if (index < 0) {
+                    slides.style.transition = 'none'; // 전환 효과 비활성화
+                    currentIndex = slideCount - slideCount / 2; // 마지막 슬라이드로 이동
+                    slides.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+                    // 다음 애니메이션에서 다시 활성화
+                    setTimeout(() => {
+                        slides.style.transition = 'transform 0.5s ease-in-out';
+                    }, 50);
+                } else {
+                    currentIndex = index;
+                    slides.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+                }
+            }
+
+            document.querySelector('.prev').addEventListener('click', () => {
+                showSlide(currentIndex - 1);
+            });
+
+            document.querySelector('.next').addEventListener('click', () => {
+                showSlide(currentIndex + 1);
+            });
+
+            // Auto slide
+            setInterval(() => {
+                showSlide(currentIndex + 1);
+            }, 3000); // 슬라이드 변경 간격 (3000ms = 3초)
+        });
+    </script>
+</th:block>
+</body>
+</html>

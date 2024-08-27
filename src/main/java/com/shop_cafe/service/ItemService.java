@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -86,5 +87,25 @@ public class ItemService {
     @Transactional(readOnly = true)
     public Page<MainItemDto> getMainItemPage(ItemSearchDto itemSearchDto, Pageable pageable) {
         return itemRepository.getMainItemPage(itemSearchDto, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ItemFormDto> getItemsByCategory(Long categoryId, Pageable pageable) {
+        // 카테고리 ID로 아이템 조회
+        Page<Item> itemPage = itemRepository.findByCategoryId(categoryId, pageable);
+
+        // 아이템을 DTO로 변환
+        return itemPage.map(item -> {
+            // 아이템 이미지 리스트 조회
+            List<ItemImg> itemImgList = itemImgRepository.findByItemIdOrderByIdAsc(item.getId());
+            List<ItemImgDto> itemImgDtoList = itemImgList.stream()
+                    .map(ItemImgDto::of)
+                    .collect(Collectors.toList());
+
+            // Item -> ItemFormDto 변환
+            ItemFormDto itemFormDto = ItemFormDto.of(item);
+            itemFormDto.setItemImgDtoList(itemImgDtoList);
+            return itemFormDto;
+        });
     }
 }

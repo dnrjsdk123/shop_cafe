@@ -75,16 +75,16 @@
                 <span class="input-group-text">상품카테고리</span>
             </div>
             <select th:field="*{categoryId}" class="form-select">
-                <option value="1">카테고리 1</option>
-                <option value="2">카테고리 2</option>
-                <option value="3">카테고리 3</option>
-                <option value="4">카테고리 4</option>
-                <option value="5">카테고리 5</option>
-                <option value="6">카테고리 6</option>
-                <option value="7">카테고리 7</option>
-                <option value="8">카테고리 8</option>
-                <option value="9">카테고리 9</option>
-                <option value="10">카테고리 10</option>
+                <option value="1">커피 [1]</option>
+                <option value="2">티백 [2]</option>
+                <option value="3">소스 [3]</option>
+                <option value="4">시럽 [4]</option>
+                <option value="5">파우더 [5]</option>
+                <option value="6">배이커리 [6]</option>
+                <option value="7">휘핑 / 유제품 [7]</option>
+                <option value="8">테이크아웃 용품 [8]</option>
+                <option value="9">머신 [9]</option>
+                <option value="10">위생용품 [10]</option>
             </select>
         </div>
         <p th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}" class="fieldError">Incorrect data</p>

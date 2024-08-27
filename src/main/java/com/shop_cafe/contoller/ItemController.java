@@ -110,4 +110,18 @@ public class ItemController {
         return "item/itemDtl";
     }
 
+    @GetMapping("/items")
+    public String getItemsByCategoryId(
+            @RequestParam("categoryId") Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ItemFormDto> itemPage = itemService.getItemsByCategory(categoryId, pageable);
+        model.addAttribute("itemPage", itemPage);
+        model.addAttribute("categoryId", categoryId);
+        return "item/itemList"; // itemList.html 템플릿을 반환
+    }
+
 }

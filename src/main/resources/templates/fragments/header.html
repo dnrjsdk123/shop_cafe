@@ -8,7 +8,7 @@
 <div th:fragment="header" class="text-center">
     <div class="navbar">
         <a class="navbar-brand" href="/" style="position: absolute; left: 100px;">
-            <img src="/img/" alt="Shop Logo"> <!-- 로고 이미지 -->
+            <img src="/img/logo.png" alt="Shop Logo"> <!-- 로고 이미지 -->
         </a>
 
         <form class="d-flex justify-content-center w-50 mx-auto" th:action="@{/}" method="get">
@@ -21,9 +21,13 @@
             <ul class="navbar-nav">
                 <li class="nav-item" sec:authorize="isAnonymous()">
                     <a href="/members/login">로그인</a>
+                    <a href="/members/new">회원가입</a>
+                    <a href="/boards/notice">공지사항</a>
                 </li>
                 <li class="nav-item" sec:authorize="isAuthenticated()">
                     <a href="/members/logout">로그아웃</a>
+                    <a href="/members/myPage">마이페이지</a>
+                    <a href="/boards/notice">공지사항</a>
                 </li>
             </ul>
         </div>
@@ -48,6 +52,39 @@
                     <li class="nav-item" >
                         <a class="nav-link" href="/boards/notice">공지사항</a>
                     </li>
+                    <!-- 여기에서 카테고리 ID를 URL에 포함하여 전달 -->
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/items(categoryId=1)}">커피</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/items(categoryId=2)}">티백</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/items(categoryId=3)}">소스</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/items(categoryId=4)}">시럽</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/items(categoryId=5)}">파우더</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/items(categoryId=6)}">배이커리</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/items(categoryId=7)}">휘핑 / 유제품</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/items(categoryId=8)}">테이크아웃 용품</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/items(categoryId=9)}">머신</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/items(categoryId=10)}">위생용품</a>
+                    </li>
+
+                    <!-- 필요한 카테고리 링크를 추가 -->
                 </ul>
             </div>
         </div>

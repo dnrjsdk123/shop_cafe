@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        .error{
+          color: #bd2130;
+         }
+    </style>
+</th:block>
+<div layout:fragment="content">
+   <a>마이페이지야</a>
+</div>
+</html>
