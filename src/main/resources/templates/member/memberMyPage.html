@@ -6,12 +6,66 @@
 <!-- 사용자 CSS 추가 -->
 <th:block layout:fragment="css">
     <style>
-        .error{
-          color: #bd2130;
-         }
+        .error {
+            color: #bd2130;
+        }
+        .profile {
+            text-align: center; /* 프로필 섹션을 중앙 정렬 */
+            margin: 40px 0;
+        }
+        .profile img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+        .profile-name {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .sidebar {
+            width: 200px;
+            float: left;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #333;
+        }
+        .content {
+            margin-left: 220px; /* 사이드바 폭만큼 여백 추가 */
+        }
     </style>
 </th:block>
+
 <div layout:fragment="content">
-   <a>마이페이지야</a>
+
+    <!-- 메인 콘텐츠 섹션 -->
+    <div class="content">
+        <!-- 프로필 섹션 -->
+        <div class="profile">
+            <img src="path/to/default-profile.png" alt="프로필 이미지" th:src="@{/images/default-profile.png}">
+            <div class="profile-name" th:text="${username} + '님, 환영합니다!'">홍길동님, 환영합니다!</div>
+        </div>
+
+        <!-- 나머지 콘텐츠 -->
+        <p>마이페이지 메인 콘텐츠 영역입니다.</p>
+    </div>
+
+    <!-- 사이드바 섹션 -->
+    <div class="sidebar">
+        <ul>
+            <li><a href="#" th:href="@{/cart}">장바구니</a></li>
+            <li><a href="#" th:href="@{/order-history}">구매내역</a></li>
+            <li><a href="#" th:href="@{/inquiry}">1:1 문의</a></li>
+        </ul>
+    </div>
+
 </div>
 </html>

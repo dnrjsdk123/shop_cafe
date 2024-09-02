@@ -3,6 +3,8 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout1}">
 <head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <!-- 사용자 CSS 추가 -->
     <th:block layout:fragment="css">
         <style>
@@ -70,7 +72,6 @@
             <div class="slide">
                 <img src="https://via.placeholder.com/1920x500?text=Slide+3" alt="Slide 3">
             </div>
-            <!-- 복제된 슬라이드 -->
         </div>
         <a class="prev">&#10094;</a>
         <a class="next">&#10095;</a>
@@ -78,10 +79,10 @@
 
     <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
     <div th:if="${not #strings.isEmpty(itemSearchDto.searchQuery)}" class="center">
-        <p class="h3 font-weight-bold" th:text="${itemSearchDto.searchQuery} + '검색결과'"></p>
+        <p class="h3 font-weight-bold" th:text="${itemSearchDto.searchQuery} + ' 검색결과'"></p>
     </div>
     <div class="container text-center">
-        <div class="row row-cols-5">
+        <div id="product-row" class="row row-cols-5">
             <th:block th:each="item, status: ${items.getContent()}">
                 <div class="col">
                     <div class="card">
@@ -89,7 +90,7 @@
                             <img th:src="${item.imgUrl}" class="card-img-top" th:alt="${item.itemNm}" height="400">
                             <div class="card-body">
                                 <h4 class="card-title">[[${item.itemNm}]]</h4>
-                                <p class="card-text">[[${item.itemDetail}]]</p>
+                                <p class="card-text">[[${item.stockNumber}]]개</p>
                                 <h3 class="card-title text-danger">[[${item.price}]]원</h3>
                             </div>
                         </a>
@@ -98,34 +99,95 @@
             </th:block>
         </div>
     </div>
-    <div th:with="start=${(items.number/maxPage)*maxPage +1},
-            end=(${(items.totalPages == 0) ? 1 : (start + (maxPage-1) < items.totalPages ?
-            start + (maxPage - 1) : items.totalPages)})">
-        <ul class="pagination justify-content-center">
-            <li class="page-item" th:classappend="${items.number eq 0}?'disabled'">
-                <a th:href="@{'/' + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number-1}}"
-                   aria-label='Previous' class="page-link">
-                    <span aria-hidden="true">Previous</span>
-                </a>
-            </li>
-            <li class="page-item" th:each="page: ${#numbers.sequence(start,end)}"
-                th:classappend="${items.number eq page-1}?'active':''">
-                <a th:href="@{'/' + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' +${page -1}}"
-                   th:inline="text" class="page-link">[[${page}]]</a>
-            </li>
-            <li class="page-item" th:classappend="${items.number+1 ge items.totalPages}?'disabled'">
-                <a th:href="@{'/' + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number + 1}}"
-                   aria-label="Next" class="page-link">
-                    <span aria-hidden="true">Next</span>
-                </a>
-            </li>
-        </ul>
-    </div>
 </div>
 
 <th:block layout:fragment="script">
     <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', () => {
+            // Thymeleaf를 사용하여 서버 측 데이터 전달
+            var isSearchQueryNotEmpty = /*[[${not #strings.isEmpty(itemSearchDto.searchQuery)}]]*/ false;
+
+            function initializeInfiniteScroll(isSearch) {
+                let page = 1;
+                let isLoading = false;
+
+                const csrfToken = $('meta[name="_csrf"]').attr('content');
+                const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+                function loadItems() {
+                    if (isLoading) return;
+                    isLoading = true;
+                    console.log(`Loading items for page ${page}`);
+
+                    const url = isSearch ? `/loadItems/search?page=${page}` : `/loadItems?page=${page}`;
+
+                    $.ajax({
+                        url: url,
+                        method: 'GET',
+                        dataType: 'json',
+                        beforeSend: function(xhr) {
+                            xhr.setRequestHeader(csrfHeader, csrfToken);
+                        },
+                        success: function(data) {
+                            console.log('Data loaded successfully:', data);
+                            data.content.forEach(item => {
+                                $('#product-row').append(`
+                                    <div class="col">
+                                        <div class="card">
+                                            <a href="/item/${item.id}" class="text-dark">
+                                                <img src="${item.imgUrl}" class="card-img-top" alt="${item.itemNm}" height="400">
+                                                <div class="card-body">
+                                                    <h4 class="card-title">${item.itemNm}</h4>
+                                                    <p class="card-text">${item.stockNumber}개</p>
+                                                    <h3 class="card-title text-danger">${item.price}원</h3>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                `);
+                            });
+                            page++;
+                            console.log(`Next page will be ${page}`);
+                            isLoading = false;
+
+                            if (!data.last) {
+                                const lastItem = $('#product-row .col:last')[0];
+                                if (lastItem) {
+                                    observer.observe(lastItem);
+                                }
+                            } else {
+                                observer.disconnect();
+                                // Footer 등을 표시할 수 있는 코드 추가
+                            }
+                        },
+                        error: function(error) {
+                            console.error('Error loading data:', error);
+                            isLoading = false;
+                        }
+                    });
+                }
+
+                loadItems();
+
+                const observerOptions = {
+                    root: null,
+                    threshold: 0.5
+                };
+
+                const observer = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            observer.unobserve(entry.target);
+                            loadItems();
+                        }
+                    });
+                }, observerOptions);
+            }
+
+            // 무한 스크롤 초기화
+            initializeInfiniteScroll(isSearchQueryNotEmpty);
+
+            // 슬라이드 쇼 관련 코드
             const slides = document.querySelector('.slides');
             const slideCount = document.querySelectorAll('.slide').length;
             const slideWidth = document.querySelector('.slide').offsetWidth;
@@ -133,18 +195,16 @@
 
             function showSlide(index) {
                 if (index >= slideCount) {
-                    slides.style.transition = 'none'; // 전환 효과 비활성화
+                    slides.style.transition = 'none';
                     currentIndex = 0;
                     slides.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
-                    // 다음 애니메이션에서 다시 활성화
                     setTimeout(() => {
                         slides.style.transition = 'transform 0.5s ease-in-out';
                     }, 50);
                 } else if (index < 0) {
-                    slides.style.transition = 'none'; // 전환 효과 비활성화
-                    currentIndex = slideCount - slideCount / 2; // 마지막 슬라이드로 이동
+                    slides.style.transition = 'none';
+                    currentIndex = slideCount - slideCount / 2;
                     slides.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
-                    // 다음 애니메이션에서 다시 활성화
                     setTimeout(() => {
                         slides.style.transition = 'transform 0.5s ease-in-out';
                     }, 50);
@@ -162,10 +222,9 @@
                 showSlide(currentIndex + 1);
             });
 
-            // Auto slide
             setInterval(() => {
                 showSlide(currentIndex + 1);
-            }, 3000); // 슬라이드 변경 간격 (3000ms = 3초)
+            }, 3000);
         });
     </script>
 </th:block>

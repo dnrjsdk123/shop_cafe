@@ -25,25 +25,42 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests(auth -> auth
-                .requestMatchers("/css/**", "/js/**","/img/**","/favicon.ico","/error").permitAll()
-                .requestMatchers("/","/members/**","/item/**","/images/**","/noticeBoard/**").permitAll()
-                .requestMatchers("/boards/notice/**").permitAll()
-                .requestMatchers("/boards/newBd/**").permitAll()
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
-        ).formLogin(formLogin -> formLogin
-                .loginPage("/members/login")
-                .defaultSuccessUrl("/")
-                .usernameParameter("email")
-                .failureUrl("/members/login/error")
-        ).logout(logout-> logout
-                .logoutRequestMatcher(new AntPathRequestMatcher("/members/logout"))
-                .logoutSuccessUrl("/")
-        ).oauth2Login(oauthLogin -> oauthLogin
-                .defaultSuccessUrl("/")
-                .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
-                        .userService(customOAuth2UserService))
-        );
+                        .requestMatchers("/css/**", "/js/**","/img/**","/favicon.ico","/error").permitAll()
+                        .requestMatchers("/","/members/**","/item/**","/images/**","/noticeBoard/**").permitAll()
+                        .requestMatchers("/loadItems").permitAll()
+                        .requestMatchers("/boards/notice/**").permitAll()
+                        .requestMatchers("/boards/newBd/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/mypage").authenticated()  // 마이페이지에 대한 인증 설정 추가
+                        .anyRequest().authenticated()
+                )
+                .formLogin(formLogin -> formLogin
+                        .loginPage("/members/login")
+                        .defaultSuccessUrl("/")
+                        .usernameParameter("email")
+                        .failureUrl("/members/login/error")
+                )
+                .logout(logout -> logout
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/members/logout"))
+                        .logoutSuccessUrl("/")
+                )
+                .oauth2Login(oauthLogin -> oauthLogin
+                        .defaultSuccessUrl("/")
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+                                .userService(customOAuth2UserService))
+                )
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .ignoringRequestMatchers("/admin/item/new",
+                                "/",
+                                "/loadItems",
+                                "mapApi/**",
+                                "item/**",
+                                "img/**",
+                                "/boards/notice/**",
+                                "/boards/newBd/**"
+                        )
+                );
 
         http.exceptionHandling(exception -> exception
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
