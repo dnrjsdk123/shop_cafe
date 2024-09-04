@@ -25,11 +25,16 @@ public class User{
     private String picture;
 
     private String role = "ROLE_USER";
-    public User(String name, String email, String picture) {
+    @Column(unique = true)
+    private String socialId; // 카카오 또는 구글의 고유 ID를 저장
+
+    public User(String name, String email, String picture, String socialId) {
         this.name = name;
         this.email = email;
         this.picture = picture;
+        this.socialId = socialId;
     }
+
     public User update(String name, String picture) {
         this.name = name;
         this.picture = picture;

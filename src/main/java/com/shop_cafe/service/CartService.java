@@ -4,14 +4,8 @@ import com.shop_cafe.dto.CartDetailDto;
 import com.shop_cafe.dto.CartItemDto;
 import com.shop_cafe.dto.CartOrderDto;
 import com.shop_cafe.dto.OrderDto;
-import com.shop_cafe.entity.Cart;
-import com.shop_cafe.entity.CartItem;
-import com.shop_cafe.entity.Item;
-import com.shop_cafe.entity.Member;
-import com.shop_cafe.repository.CartItemRepository;
-import com.shop_cafe.repository.CartRepository;
-import com.shop_cafe.repository.ItemRepository;
-import com.shop_cafe.repository.MemberRepository;
+import com.shop_cafe.entity.*;
+import com.shop_cafe.repository.*;
 import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +14,7 @@ import org.thymeleaf.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +25,7 @@ public class CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final OrderService orderService;
+    private final UserRepository userRepository;
     public Long addCart(CartItemDto cartItemDto, String email){
         Item item = itemRepository.findById(cartItemDto.getItemId())
                 .orElseThrow(EntityExistsException::new);
@@ -68,21 +64,51 @@ public class CartService {
     }
 
     @Transactional(readOnly = true)
-    public boolean validateCartItem(Long cartItemId, String email){
-        // email을 이용해서 Member 엔티티 객체 추출
+    public boolean validateCartItem(Long cartItemId, String email) {
+        System.out.println(email + " 이메일 로그확인");
+
+        // Step 1: Member 엔티티를 먼저 조회
         Member curMember = memberRepository.findByEmail(email);
-        // cartItemId를 이용해서 CartItem 엔티티 객체 추출
+
+        // Step 2: Member가 없거나 Member의 이메일이 null인 경우 User로 조회
+        if (curMember == null || curMember.getEmail() == null) {
+            System.out.println("Member가 없거나 이메일이 null입니다, User로 조회 시도: " + email);
+
+            // User 엔티티 조회
+            Optional<User> curUserOptional = userRepository.findBySocialId(email);
+            if (!curUserOptional.isPresent()) {
+                System.out.println("사용자를 찾을 수 없습니다: " + email);
+                return false;
+            }
+
+            User curUser = curUserOptional.get();
+            System.out.println(curUser + " 사용자 값");
+
+            // User의 이메일로 다시 Member 조회
+            curMember = memberRepository.findByEmail(curUser.getEmail());
+            if (curMember == null) {
+                System.out.println("User의 이메일로 Member를 찾을 수 없습니다: " + curUser.getEmail());
+                return false;
+            }
+        }
+
+        System.out.println(curMember + " 최종 Member 값");
+
+        // Step 3: cartItemId를 이용해서 CartItem 엔티티 객체 추출
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(EntityExistsException::new);
-        // Cart -> Memeber 엔티티 객체를 추출
+
+        // Step 4: Cart -> Member 엔티티 객체를 추출
         Member savedMember = cartItem.getCart().getMember();
-        // 현재 로그인된 Member == CartItem에 있는 Member -> 같지 않으면 true return false
-        if(!StringUtils.equals(curMember.getEmail(),savedMember.getEmail())){
+
+        // Step 5: 현재 로그인된 Member와 CartItem에 있는 Member를 비교
+        if (!StringUtils.equals(curMember.getEmail(), savedMember.getEmail())) {
             return false;
         }
-        // 현재 로그인된 Member == CartItem에 있는 Member -> 같으면 return true
+
         return true;
     }
+
     public void updateCartItemCount(Long cartItemId, int count){
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(EntityExistsException::new);

@@ -21,13 +21,16 @@ public class MemberService implements UserDetailsService {
     }
 
     private void validateDuplicateMember(Member member) {
-        Member findMember = memberRepository.findByEmail(member.getEmail());
-        if (findMember != null ) {
-            throw new IllegalStateException("이미 가입된 회원입니다."); // 예외 발생
-        }
-        findMember = memberRepository.findByPhone(member.getPhone());
-        if (findMember != null) {
-            throw new IllegalStateException("이미 가입된 전화번호입니다."); // 예외 발생
+        if (member.getId() == null) { // 신규 회원 가입 시에만 중복 검사
+            Member findMemberByEmail = memberRepository.findByEmail(member.getEmail());
+            if (findMemberByEmail != null) {
+                throw new IllegalStateException("이미 가입된 회원입니다."); // 예외 발생
+            }
+
+            Member findMemberByPhone = memberRepository.findByPhone(member.getPhone());
+            if (findMemberByPhone != null) {
+                throw new IllegalStateException("이미 가입된 전화번호입니다."); // 예외 발생
+            }
         }
     }
 
