@@ -40,6 +40,7 @@ public class Member extends BaseEntity {
     @Column(unique = true)
     private String socialId;
 
+
     public static Member createMember(MemberFormDto memberFormDto, PasswordEncoder passwordEncoder) {
         Member member = new Member();
         member.setName(memberFormDto.getName());

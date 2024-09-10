@@ -28,7 +28,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ItemImgRepository itemImgRepository;
 
-    public Long order(OrderDto orderDto, String email) {
+    public Order order(OrderDto orderDto, String email) {
         Item item = itemRepository.findById(orderDto.getItemId())
                 .orElseThrow(EntityNotFoundException::new);
         Member member = memberRepository.findByEmail(email);
@@ -39,8 +39,9 @@ public class OrderService {
 
         Order order = Order.createOrder(member, orderItemList);
         orderRepository.save(order);
-        return order.getId();
+        return order;
     }
+
 
     @Transactional(readOnly = true)
     public Page<OrderHistDto> getOrderList(String email, Pageable pageable){
@@ -103,4 +104,15 @@ public class OrderService {
 
         return order.getId();
     }
+
+    // 주문내역 삭제 - KG 이니지스
+    @Transactional
+    public void deleteOrderById(Long orderId) {
+        if(orderRepository.existsById(orderId)){
+            orderRepository.deleteById(orderId);
+        } else {
+            throw new IllegalArgumentException("Invalid order ID: " + orderId);
+        }
+    }
+
 }

@@ -1,10 +1,14 @@
-<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout1}">
 <head>
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <!--**************결제 시스템 자바스크립트****************** -->
+    <!--포트원 SDK import-->
+    <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+    <script src="/js/Kakao.js"></script>
+    <script src="/js/KGInigis.js"></script>
 </head>
 
 <th:block layout:fragment="script">
@@ -102,6 +106,7 @@
 
 
     </script>
+
 </th:block>
 <!-- 사용자 CSS 추가 -->
 <th:block layout:fragment="css">
@@ -168,7 +173,8 @@
                 <button type="button" class="btn btn-light border border-primary btn-lg"
                         onclick="addCart()">
                     장바구니 담기</button>
-                <button type="button" class="btn btn-primary btn-lg" onclick="order()">주문하기</button>
+                <!--<button type="button" class="btn btn-primary btn-lg" onclick="order()">주문하기</button>-->
+                <button type="button" class="btn btn-primary btn-lg" id="KGInigis" onclick="order()" >주문하기</button>
             </div>
             <div th:unless="${item.itemSellStatus == T(com.shop_cafe.constant.ItemSellStatus).SELL}"
                  class="text-right">
@@ -189,4 +195,5 @@
              width="800">
     </div>
 </div>
+
 </html>

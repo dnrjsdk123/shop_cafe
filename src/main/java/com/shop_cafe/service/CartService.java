@@ -147,4 +147,11 @@ public class CartService {
         }
         return orderId;
     }
+    public void deleteCartItemsAfterOrder(List<OrderDto> orderDtos) {
+        for (OrderDto orderDto : orderDtos) {
+            CartItem cartItem = cartItemRepository.findByItemId(orderDto.getItemId())
+                    .orElseThrow(EntityExistsException::new);
+            cartItemRepository.delete(cartItem);
+        }
+    }
 }
