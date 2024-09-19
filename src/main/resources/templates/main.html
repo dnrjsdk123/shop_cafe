@@ -5,58 +5,13 @@
 <head>
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link rel="stylesheet" href="css/main.css"> <!-- 실제 CSS 파일 경로로 수정 -->
+
     <!-- 사용자 CSS 추가 -->
     <th:block layout:fragment="css">
-        <style>
-            body {
-                min-height: 100%;
-                padding: 0;
-            }
-            .slider {
-                position: relative;
-                width: 100%;
-                max-width: 1920px; /* 최대 너비 1920px */
-                height: 500px; /* 슬라이드 배너의 높이 */
-                margin: auto;
-                overflow: hidden;
-            }
-            .slides {
-                display: flex;
-                transition: transform 0.5s ease-in-out;
-                height: 100%; /* 슬라이드 배너의 높이에 맞게 조정 */
-            }
-            .slide {
-                min-width: 100%;
-                box-sizing: border-box;
-                height: 100%; /* 슬라이드 배너의 높이에 맞게 조정 */
-            }
-            .slide img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover; /* 이미지 비율 유지하면서 크기 조절 */
-            }
-            .prev, .next {
-                cursor: pointer;
-                position: absolute;
-                top: 50%;
-                width: auto;
-                padding: 16px;
-                color: white;
-                font-weight: bold;
-                font-size: 18px;
-                border-radius: 0 3px 3px 0;
-                user-select: none;
-                background-color: rgba(0,0,0,0.5);
-            }
-            .next {
-                right: 0;
-                border-radius: 3px 0 0 3px;
-            }
-            .prev:hover, .next:hover {
-                background-color: rgba(0,0,0,0.8);
-            }
-        </style>
     </th:block>
+    <script src="js/main.js"></script>
 </head>
 <body>
 <div layout:fragment="content">
@@ -64,13 +19,25 @@
         <div class="slides">
             <!-- 원본 슬라이드 -->
             <div class="slide">
-                <img src="https://via.placeholder.com/1920x500?text=Slide+1" alt="Slide 1">
+                <img src="img/benner/coffee.jpg" alt="Slide 1">
             </div>
             <div class="slide">
-                <img src="https://via.placeholder.com/1920x500?text=Slide+2" alt="Slide 2">
+                <img src="img/benner/fomona_banila.jpg" alt="Slide 2">
             </div>
             <div class="slide">
-                <img src="https://via.placeholder.com/1920x500?text=Slide+3" alt="Slide 3">
+                <img src="img/benner/ice_cup.jpg" alt="Slide 3">
+            </div>
+            <div class="slide">
+                <img src="img/benner/icetea.jpg" alt="Slide 4">
+            </div>
+            <div class="slide">
+                <img src="img/benner/monin.jpg" alt="Slide 5">
+            </div>
+            <div class="slide">
+                <img src="img/benner/ripple_jem.jpg" alt="Slide 6">
+            </div>
+            <div class="slide">
+                <img src="img/benner/shot.jpg" alt="Slide 7">
             </div>
         </div>
         <a class="prev">&#10094;</a>
@@ -82,16 +49,16 @@
         <p class="h3 font-weight-bold" th:text="${itemSearchDto.searchQuery} + ' 검색결과'"></p>
     </div>
     <div class="container text-center">
-        <div id="product-row" class="row row-cols-5">
+        <div id="product-row" class="row row-cols-4">
             <th:block th:each="item, status: ${items.getContent()}">
                 <div class="col">
                     <div class="card">
                         <a th:href="'/item/' + ${item.id}" class="text-dark">
-                            <img th:src="${item.imgUrl}" class="card-img-top" th:alt="${item.itemNm}" height="400">
+                            <img th:src="${item.imgUrl}" class="card-img-top" th:alt="${item.itemNm}" height="300">
                             <div class="card-body">
                                 <h4 class="card-title">[[${item.itemNm}]]</h4>
-                                <p class="card-text">[[${item.stockNumber}]]개</p>
                                 <h3 class="card-title text-danger">[[${item.price}]]원</h3>
+                                <p class="card-text">[[${item.stockNumber}]]개</p>
                             </div>
                         </a>
                     </div>
@@ -99,134 +66,15 @@
             </th:block>
         </div>
     </div>
+    <div class="sidebar">
+        <h2>최근 본 상품</h2>
+        <ul>
+
+        </ul>
+    </div>
 </div>
 
 <th:block layout:fragment="script">
-    <script th:inline="javascript">
-        document.addEventListener('DOMContentLoaded', () => {
-            // Thymeleaf를 사용하여 서버 측 데이터 전달
-            var isSearchQueryNotEmpty = /*[[${not #strings.isEmpty(itemSearchDto.searchQuery)}]]*/ false;
-
-            function initializeInfiniteScroll(isSearch) {
-                let page = 1;
-                let isLoading = false;
-
-                const csrfToken = $('meta[name="_csrf"]').attr('content');
-                const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
-
-                function loadItems() {
-                    if (isLoading) return;
-                    isLoading = true;
-                    console.log(`Loading items for page ${page}`);
-
-                    const url = isSearch ? `/loadItems/search?page=${page}` : `/loadItems?page=${page}`;
-
-                    $.ajax({
-                        url: url,
-                        method: 'GET',
-                        dataType: 'json',
-                        beforeSend: function(xhr) {
-                            xhr.setRequestHeader(csrfHeader, csrfToken);
-                        },
-                        success: function(data) {
-                            console.log('Data loaded successfully:', data);
-                            data.content.forEach(item => {
-                                $('#product-row').append(`
-                                    <div class="col">
-                                        <div class="card">
-                                            <a href="/item/${item.id}" class="text-dark">
-                                                <img src="${item.imgUrl}" class="card-img-top" alt="${item.itemNm}" height="400">
-                                                <div class="card-body">
-                                                    <h4 class="card-title">${item.itemNm}</h4>
-                                                    <p class="card-text">${item.stockNumber}개</p>
-                                                    <h3 class="card-title text-danger">${item.price}원</h3>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                `);
-                            });
-                            page++;
-                            console.log(`Next page will be ${page}`);
-                            isLoading = false;
-
-                            if (!data.last) {
-                                const lastItem = $('#product-row .col:last')[0];
-                                if (lastItem) {
-                                    observer.observe(lastItem);
-                                }
-                            } else {
-                                observer.disconnect();
-                                // Footer 등을 표시할 수 있는 코드 추가
-                            }
-                        },
-                        error: function(error) {
-                            console.error('Error loading data:', error);
-                            isLoading = false;
-                        }
-                    });
-                }
-
-                loadItems();
-
-                const observerOptions = {
-                    root: null,
-                    threshold: 0.5
-                };
-
-                const observer = new IntersectionObserver((entries, observer) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            observer.unobserve(entry.target);
-                            loadItems();
-                        }
-                    });
-                }, observerOptions);
-            }
-
-            // 무한 스크롤 초기화
-            initializeInfiniteScroll(isSearchQueryNotEmpty);
-
-            // 슬라이드 쇼 관련 코드
-            const slides = document.querySelector('.slides');
-            const slideCount = document.querySelectorAll('.slide').length;
-            const slideWidth = document.querySelector('.slide').offsetWidth;
-            let currentIndex = 0;
-
-            function showSlide(index) {
-                if (index >= slideCount) {
-                    slides.style.transition = 'none';
-                    currentIndex = 0;
-                    slides.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
-                    setTimeout(() => {
-                        slides.style.transition = 'transform 0.5s ease-in-out';
-                    }, 50);
-                } else if (index < 0) {
-                    slides.style.transition = 'none';
-                    currentIndex = slideCount - slideCount / 2;
-                    slides.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
-                    setTimeout(() => {
-                        slides.style.transition = 'transform 0.5s ease-in-out';
-                    }, 50);
-                } else {
-                    currentIndex = index;
-                    slides.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
-                }
-            }
-
-            document.querySelector('.prev').addEventListener('click', () => {
-                showSlide(currentIndex - 1);
-            });
-
-            document.querySelector('.next').addEventListener('click', () => {
-                showSlide(currentIndex + 1);
-            });
-
-            setInterval(() => {
-                showSlide(currentIndex + 1);
-            }, 3000);
-        });
-    </script>
 </th:block>
 </body>
 </html>

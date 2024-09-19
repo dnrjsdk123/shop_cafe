@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -64,5 +66,21 @@ public class ItemImgService {
             //※ 영속성 상태여야함 사용가능
             savedItemImg.updateItemImg(oriImgName, imgName, imgUrl);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public String selectProductImageUrlByProductId(Long id) {
+        // 아이템 이미지 리스트를 아이템 ID로 조회
+        List<ItemImg> itemImgList = itemImgRepository.findByItemIdOrderByIdAsc(id);
+
+        // 첫 번째 이미지만 가져오기
+        if (itemImgList.isEmpty()) {
+            throw new EntityNotFoundException("No images found for the item with ID " + id);
+        }
+
+        // 첫 번째 이미지의 URL 반환
+        ItemImg firstItemImg = itemImgList.get(0);
+        System.out.println(itemImgList.get(0)+"제대로 읽어오는지 확인");
+        return firstItemImg.getImgUrl(); // `getImageUrl()`은 이미지 URL을 반환하는 메소드입니다
     }
 }

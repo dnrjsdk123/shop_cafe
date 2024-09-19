@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{layouts/layout1}">
 
 <head>
     <style>
+        .content {
+           margin-right: 200px; /* 왼쪽 여백 추가 */
+           margin-left: 200px; /* 왼쪽 여백 추가 */        }
         table {
             width: 100%;
             border-collapse: separate; /* 각 셀의 경계를 분리해서 보여줍니다 */
@@ -155,7 +158,7 @@
         </div>
     </form>
     <form onsubmit="return false;">
-        <button class="btn btn-primary" onclick="location.href='/boards/newBd'">글쓰기</button>
+        <button class="btn btn-primary" onclick="location.href='/boards/newBd'" sec:authorize="hasAuthority('ROLE_ADMIN')">글쓰기</button>
     </form>
 </div>
 

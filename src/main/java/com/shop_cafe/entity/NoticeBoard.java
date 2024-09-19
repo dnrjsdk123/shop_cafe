@@ -24,6 +24,11 @@ public class NoticeBoard extends BaseEntity {
     @Column(nullable = false)
     private int view;
 
+    @ManyToOne
+    @JoinColumn(name = "member_id") // 외래키 컬럼명
+    private Member member; // 작성자
+
+
     public void updateNoticeBd(NoticeBoardDto noticeBoardDto){
         this.title = noticeBoardDto.getTitle();
         this.content = noticeBoardDto.getContent();

@@ -14,7 +14,9 @@
         <form class="d-flex justify-content-center w-50 mx-auto" th:action="@{/}" method="get">
             <input name="searchQuery" class="form-control me-2 search-input" type="search"
                    placeholder="검색어를 입력해주세요" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0 search-btn" type="submit">검색</button>
+            <button class="btn btn-outline-success my-2 my-sm-0 search-btn" type="submit">
+                <img src="/img/search.png" alt="검색" style="width: 24px; height: 24px;"/>
+            </button>
         </form>
 
         <div class="position-absolute" style="right: 20px; top: 10px;">
@@ -37,54 +39,49 @@
         <div class="container-fluid">
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
                 <ul class="nav-items-center navbar-nav mx-auto">
-                    <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
-                        <a class="nav-link" href="/admin/item/new">상품 등록</a>
+                    <!-- 전체 카테고리 드롭다운 -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" aria-expanded="false">
+                            전체 카테고리
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                            <li><a class="dropdown-item" th:href="@{/items(categoryId=1)}">커피</a></li>
+                            <li><a class="dropdown-item" th:href="@{/items(categoryId=2)}">티백</a></li>
+                            <li><a class="dropdown-item" th:href="@{/items(categoryId=3)}">소스</a></li>
+                            <li><a class="dropdown-item" th:href="@{/items(categoryId=4)}">시럽</a></li>
+                            <li><a class="dropdown-item" th:href="@{/items(categoryId=5)}">파우더</a></li>
+                            <li><a class="dropdown-item" th:href="@{/items(categoryId=6)}">배이커리</a></li>
+                            <li><a class="dropdown-item" th:href="@{/items(categoryId=7)}">휘핑 / 유제품</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" th:href="@{/items(categoryId=8)}">테이크아웃 용품</a></li>
+                            <li><a class="dropdown-item" th:href="@{/items(categoryId=9)}">머신</a></li>
+                            <li><a class="dropdown-item" th:href="@{/items(categoryId=10)}">위생용품</a></li>
+                        </ul>
                     </li>
-                    <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
-                        <a class="nav-link" href="/admin/items">상품 관리</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/item/itemBest">베스트상품</a>
                     </li>
-                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <!-- 다른 메뉴 항목들 -->
+                    <li class="nav-item">
                         <a class="nav-link" href="/cart">장바구니</a>
                     </li>
-                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <li class="nav-item">
                         <a class="nav-link" href="/orders">구매이력</a>
                     </li>
-                    <li class="nav-item" >
+                    <li class="nav-item">
                         <a class="nav-link" href="/boards/notice">공지사항</a>
                     </li>
-                    <!-- 여기에서 카테고리 ID를 URL에 포함하여 전달 -->
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/items(categoryId=1)}">커피</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/items(categoryId=2)}">티백</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/items(categoryId=3)}">소스</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/items(categoryId=4)}">시럽</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/items(categoryId=5)}">파우더</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/items(categoryId=6)}">배이커리</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/items(categoryId=7)}">휘핑 / 유제품</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/items(categoryId=8)}">테이크아웃 용품</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/items(categoryId=9)}">머신</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/items(categoryId=10)}">위생용품</a>
-                    </li>
 
-                    <!-- 필요한 카테고리 링크를 추가 -->
+                    <!-- 관리자로 묶은 드롭다운 -->
+                    <li class="nav-item dropdown" sec:authorize="hasAuthority('ROLE_ADMIN')">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" aria-expanded="false">
+                            관리자
+                        </a>
+                        <ul class="dropdown-menu admin-dropdown" aria-labelledby="adminDropdown">
+                            <li><a class="dropdown-item" href="/admin/item/new">상품 등록</a></li>
+                            <li><a class="dropdown-item" href="/admin/items">상품 관리</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>

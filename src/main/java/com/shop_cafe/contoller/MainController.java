@@ -44,4 +44,9 @@ public class MainController {
         Pageable pageable = PageRequest.of(page, 5); // 페이지 크기 설정
         return itemService.getMainItemPage(itemSearchDto, pageable);
     }
+
+    @GetMapping(value = "/mapApi/comingRoute")
+    public String coming(){
+        return "mapApi/comingRoute";
+    }
 }

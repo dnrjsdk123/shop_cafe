@@ -7,9 +7,7 @@ import com.shop_cafe.constant.ItemSellStatus;
 import com.shop_cafe.dto.ItemSearchDto;
 import com.shop_cafe.dto.MainItemDto;
 import com.shop_cafe.dto.QMainItemDto;
-import com.shop_cafe.entity.Item;
-import com.shop_cafe.entity.QItem;
-import com.shop_cafe.entity.QItemImg;
+import com.shop_cafe.entity.*;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -86,6 +84,32 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom{
         List<MainItemDto> content = results.getResults();
         long total = results.getTotal();
         return new PageImpl<>(content, pageable,total);
+    }
+
+    @Override
+    public List<Item> findTopItemsByOrderCount(int limit) {
+        QItem item = QItem.item;
+        QOrderItem orderItem = QOrderItem.orderItem;
+
+        return queryFactory
+                .select(item)
+                .from(item)
+                .join(orderItem).on(item.id.eq(orderItem.item.id))
+                .groupBy(item)
+                .orderBy(orderItem.count.sum().desc())
+                .limit(limit)
+                .fetch();
+    }
+
+    @Override
+    public List<ItemImg> findImagesByItemIds(List<Long> itemIds) {
+        QItemImg itemImg = QItemImg.itemImg;
+
+        return queryFactory
+                .select(itemImg)
+                .from(itemImg)
+                .where(itemImg.item.id.in(itemIds)) // 아이템 ID로 필터링
+                .fetch();
     }
 
 }

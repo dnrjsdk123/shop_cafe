@@ -6,66 +6,131 @@
 <!-- 사용자 CSS 추가 -->
 <th:block layout:fragment="css">
     <style>
-        .error {
-            color: #bd2130;
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f8fa;
+            color: #333;
         }
+
+        /* 공통 */
+        .container {
+            display: flex;
+            justify-content: space-between;
+            padding: 40px;
+        }
+
+        /* 프로필 섹션 스타일 */
         .profile {
-            text-align: center; /* 프로필 섹션을 중앙 정렬 */
-            margin: 40px 0;
+            text-align: center;
+            margin-bottom: 30px;
         }
+
         .profile img {
             width: 150px;
             height: 150px;
             border-radius: 50%;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            border: 4px solid #e9ecef;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         .profile-name {
             font-size: 24px;
             font-weight: bold;
+            color: #495057;
         }
+
+        /* 사이드바 스타일 */
         .sidebar {
-            width: 200px;
-            float: left;
+            width: 250px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
         }
+
         .sidebar ul {
             list-style-type: none;
             padding: 0;
+            margin: 0;
         }
+
         .sidebar ul li {
-            margin: 10px 0;
+            margin-bottom: 20px;
         }
+
         .sidebar ul li a {
             text-decoration: none;
-            color: #333;
+            font-size: 18px;
+            color: #343a40;
+            display: flex;
+            align-items: center;
         }
+
+        .sidebar ul li a:hover {
+            color: #007bff;
+        }
+
+        .sidebar ul li a::before {
+            content: '➜';
+            margin-right: 10px;
+            color: #adb5bd;
+        }
+
+        /* 콘텐츠 영역 스타일 */
         .content {
-            margin-left: 220px; /* 사이드바 폭만큼 여백 추가 */
+            flex-grow: 1;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-left: 30px;
+            margin-right: 30px;
+        }
+
+        .content p {
+            font-size: 18px;
+            color: #495057;
+        }
+
+        /* 반응형 조정 */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .content {
+                margin-left: 0;
+                margin-top: 20px;
+            }
+            .sidebar {
+                width: 100%;
+            }
         }
     </style>
 </th:block>
 
 <div layout:fragment="content">
-
-    <!-- 메인 콘텐츠 섹션 -->
-    <div class="content">
-        <!-- 프로필 섹션 -->
-        <div class="profile">
-            <img src="path/to/default-profile.png" alt="프로필 이미지" th:src="@{/images/default-profile.png}">
-            <div class="profile-name" th:text="${username} + '님, 환영합니다!'">홍길동님, 환영합니다!</div>
+    <div class="container">
+        <!-- 사이드바 섹션 -->
+        <div class="sidebar">
+            <ul>
+                <li><a href="#" th:href="@{/cart}">장바구니</a></li>
+                <li><a href="#" th:href="@{/orders}">구매내역</a></li>
+                <li><a href="http://pf.kakao.com/_xfCyzn" >1:1 문의</a></li>
+            </ul>
         </div>
 
-        <!-- 나머지 콘텐츠 -->
-        <p>마이페이지 메인 콘텐츠 영역입니다.</p>
-    </div>
+        <!-- 메인 콘텐츠 섹션 -->
+        <div class="content">
+            <!-- 프로필 섹션 -->
+            <div class="profile">
+                <img src="img/login/profile.jpg" alt="프로필 이미지" th:src="@{/img/login/profile.jpg}">
+                <div class="profile-name" th:text="${username} + '님, 환영합니다!'">홍길동님, 환영합니다!</div>
+            </div>
 
-    <!-- 사이드바 섹션 -->
-    <div class="sidebar">
-        <ul>
-            <li><a href="#" th:href="@{/cart}">장바구니</a></li>
-            <li><a href="#" th:href="@{/order-history}">구매내역</a></li>
-            <li><a href="#" th:href="@{/inquiry}">1:1 문의</a></li>
-        </ul>
+            <!-- 나머지 콘텐츠 -->
+            <p>마이페이지 메인 콘텐츠 영역입니다.</p>
+        </div>
     </div>
-
 </div>
 </html>

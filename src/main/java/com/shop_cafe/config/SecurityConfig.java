@@ -28,8 +28,8 @@ public class SecurityConfig {
                         .requestMatchers("/css/**", "/js/**","/img/**","/favicon.ico","/error").permitAll()
                         .requestMatchers("/","/members/**","/item/**","/images/**","/noticeBoard/**").permitAll()
                         .requestMatchers("/loadItems").permitAll()
-                        .requestMatchers("/boards/notice/**").permitAll()
-                        .requestMatchers("/boards/newBd/**").permitAll()
+                        .requestMatchers("/boards/notice/**","/mapApi/**").permitAll()
+                        .requestMatchers("/boards/newBd/**","/recentViews").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/mypage").authenticated()  // 마이페이지에 대한 인증 설정 추가
                         .anyRequest().authenticated()

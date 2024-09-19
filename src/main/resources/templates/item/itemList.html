@@ -5,7 +5,67 @@
 <head>
     <th:block layout:fragment="css">
         <style>
-            /* 필요한 추가 스타일이 있으면 여기에 추가 */
+            .pagination {
+                display: flex;
+                justify-content: center;
+                margin-top: 20px;
+                padding: 0;
+                list-style: none;
+            }
+            .pagination li {
+                margin: 0 5px;
+            }
+            .pagination a {
+                display: block;
+                padding: 8px 16px;
+                border: 1px solid #dee2e6;
+                border-radius: 0.25rem;
+                color: #343a40;
+                text-decoration: none;
+            }
+            .pagination a:hover {
+                background-color: #e9ecef;
+            }
+            .pagination .active a {
+                background-color: #343a40;
+                color: #ffffff;
+                border-color: #343a40;
+            }
+            .pagination .disabled a {
+                color: #6c757d;
+                border-color: #e9ecef;
+            }
+
+            /* 카드 스타일 */
+            .card {
+                border: 1px solid #dee2e6;
+                border-radius: 0.5rem;
+                overflow: hidden;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+            .card-img-top {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+            }
+            .card-body {
+                padding: 1rem;
+            }
+            .card-title {
+                margin-bottom: 0.5rem;
+            }
+            .card-text {
+                font-size: 0.9rem;
+                color: #6c757d;
+            }
+            .text-danger {
+                color: #dc3545;
+            }
         </style>
     </th:block>
 </head>
@@ -13,12 +73,12 @@
 <body>
 <div layout:fragment="content">
     <div class="container text-center">
-        <div class="row row-cols-5">
-            <th:block th:each="itemDto, status: ${itemPage.content}">
-                <div class="col">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4">
+            <th:block th:each="itemDto : ${itemPage.content}">
+                <div class="col mb-4">
                     <div class="card">
                         <a th:href="@{'/item/' + ${itemDto.id}}" class="text-dark">
-                            <img th:src="${itemDto.itemImgDtoList[0].imgUrl}" class="card-img-top" th:alt="${itemDto.itemNm}" height="400">
+                            <img th:src="${itemDto.itemImgDtoList[0].imgUrl}" class="card-img-top" th:alt="${itemDto.itemNm}">
                             <div class="card-body">
                                 <h4 class="card-title" th:text="${itemDto.itemNm}"></h4>
                                 <p class="card-text" th:text="${itemDto.itemDetail}"></p>
@@ -32,13 +92,18 @@
     </div>
 
     <!-- 페이지 네비게이션 -->
-    <div>
-        <ul>
-            <li th:if="${itemPage.hasPrevious()}">
-                <a th:href="@{/items(categoryId=${categoryId}, page=${itemPage.number - 1}, size=${itemPage.size})}">Previous</a>
+    <div class="container">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${itemPage.hasPrevious()} ? '' : 'disabled'">
+                <a th:href="@{/items(categoryId=${categoryId}, page=${itemPage.number - 1}, size=${itemPage.size})}" class="page-link" th:text="${itemPage.hasPrevious() ? 'Previous' : 'Previous'}"></a>
             </li>
-            <li th:if="${itemPage.hasNext()}">
-                <a th:href="@{/items(categoryId=${categoryId}, page=${itemPage.number + 1}, size=${itemPage.size})}">Next</a>
+            <th:block th:each="i : ${#numbers.sequence(0, itemPage.totalPages - 1)}">
+                <li class="page-item" th:classappend="${itemPage.number == i} ? 'active' : ''">
+                    <a th:href="@{/items(categoryId=${categoryId}, page=${i}, size=${itemPage.size})}" class="page-link" th:text="${i + 1}"></a>
+                </li>
+            </th:block>
+            <li class="page-item" th:classappend="${itemPage.hasNext()} ? '' : 'disabled'">
+                <a th:href="@{/items(categoryId=${categoryId}, page=${itemPage.number + 1}, size=${itemPage.size})}" class="page-link" th:text="${itemPage.hasNext() ? 'Next' : 'Next'}"></a>
             </li>
         </ul>
     </div>

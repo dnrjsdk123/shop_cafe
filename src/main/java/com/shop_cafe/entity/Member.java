@@ -9,6 +9,8 @@ import lombok.ToString;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.tags.form.PasswordInputTag;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "member")
 @Getter
@@ -39,6 +41,9 @@ public class Member extends BaseEntity {
 
     @Column(unique = true)
     private String socialId;
+
+    @OneToMany(mappedBy = "member") // 'member'는 NoticeBoard 클래스에서 설정한 필드명
+    private Set<NoticeBoard> noticeBoards; // 회원이 작성한 게시글들
 
 
     public static Member createMember(MemberFormDto memberFormDto, PasswordEncoder passwordEncoder) {

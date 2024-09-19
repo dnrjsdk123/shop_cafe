@@ -25,4 +25,7 @@ public interface ItemRepository extends JpaRepository<Item, Long>,
     List<Item> findByItemDetailNative(@Param("itemDetail")String itemDetail);
 
     Page<Item> findByCategoryId(Long categoryId, Pageable pageable);
+
+    @Query("SELECT i FROM Item i WHERE i.id IN :ids")
+    List<Item> findByIds(@Param("ids") List<Long> ids);
 }

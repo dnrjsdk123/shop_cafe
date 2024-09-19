@@ -108,4 +108,12 @@ public class ItemService {
             return itemFormDto;
         });
     }
+
+    public List<Item> getTopItems(int limit) {
+        return itemRepository.findTopItemsByOrderCount(limit);
+    }
+
+    public List<ItemImg> getItemImagesByIds(List<Long> itemIds) {
+        return itemRepository.findImagesByItemIds(itemIds);
+    }
 }

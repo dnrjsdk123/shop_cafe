@@ -49,7 +49,7 @@ public class NoticeBoardController {
             noticeBoardService.saveNoticeBd(noticeBoardDto);
         }catch (Exception e){
             model.addAttribute("errorMessage",
-                    "상품 등록 중 에러가 발생하였습니다.");
+                    "게시글 등록중 에러가 발생하였습니다.");
             return "noticeBoard/noticeBdForm";
         }
         System.out.println("answp5");

@@ -74,7 +74,9 @@
     font-size: 1.5rem; /* 텍스트 로고 크기 설정 */
     display: flex;
     align-items: center;
-    height: 60px; /* 네비게이션 바의 높이와 일치하도록 설정 */
+    height: 125px; /* 네비게이션 바의 높이와 일치하도록 설정 */
+    padding-top: 25px;
+    margin-top: 50px;
 }
 
 /* 로고 이미지 스타일 */
@@ -115,3 +117,60 @@
     margin-right: 8px; /* 아이콘과 텍스트 사이의 여백 */
     vertical-align: middle; /* 텍스트와 아이콘의 수직 정렬 */
 }
+
+/* 드롭다운 메뉴의 기본 상태 */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+     /* 그라디언트 배경 */
+    border: 1px solid #ddd;
+    border-radius: 8px; /* 부드러운 모서리 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 드롭다운 메뉴가 보이도록 설정 */
+.nav-item.dropdown:hover .dropdown-menu {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    top: 100%;
+    left: 0;
+}
+
+/* 드롭다운 항목 스타일 */
+.dropdown-menu .dropdown-item {
+    padding: 12px 20px; /* 넉넉한 패딩 */
+    text-align: left;
+    color: #333;
+    text-decoration: none;
+    border-bottom: 1px solid #f0f0f0; /* 항목 간 구분선 */
+    transition: background-color 0.3s ease, color 0.3s ease; /* 배경 색상 변화 애니메이션 */
+}
+
+/* 마지막 항목은 구분선 없음 */
+.dropdown-menu .dropdown-item:last-child {
+    border-bottom: none;
+}
+
+/* 항목 호버 시 스타일 */
+.dropdown-menu .dropdown-item:hover {
+    background-color: #00704a; /* 호버 시 배경 색상 */
+    color: #fff; /* 호버 시 텍스트 색상 */
+}
+
+/* 드롭다운 메뉴가 사라질 때의 애니메이션 */
+.dropdown-menu {
+    transition: opacity 0.3s ease, visibility 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 드롭다운 메뉴가 호버 시에만 보이게 설정 */
+.nav-item.dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+}
+
+

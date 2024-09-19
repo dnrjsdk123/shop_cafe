@@ -2,19 +2,20 @@ package com.shop_cafe.contoller;
 
 import com.shop_cafe.dto.MemberFormDto;
 import com.shop_cafe.entity.Member;
+import com.shop_cafe.service.MailService;
 import com.shop_cafe.service.MemberService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/members")
 @Controller
@@ -22,6 +23,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class MemberController {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
+
+    private final MailService mailService;
+
+    String confirm = "";
+    boolean confirmCheck = false;
 
     @GetMapping(value = "/new")
     public String memberForm(Model model){
@@ -69,5 +75,22 @@ public class MemberController {
         System.out.println(username+"넌누구니");
         model.addAttribute("username", username);
         return "/member/memberMyPage";
+    }
+
+    @PostMapping("/{email}/emailConfirm")
+    public @ResponseBody ResponseEntity emailConfirm(@PathVariable("email") String email)
+            throws Exception{
+        confirm = mailService.sendSimpleMessage(email);
+        return new ResponseEntity<String>("인증 메일을 보냈습니다.", HttpStatus.OK);
+    }
+
+    @PostMapping("/{code}/codeCheck")
+    public @ResponseBody ResponseEntity codeConfirm(@PathVariable("code")String code)
+            throws Exception{
+        if (confirm.equals(code)){
+            confirmCheck = true;
+            return new ResponseEntity<String>("인증 성공 하였습니다.",HttpStatus.OK);
+        }
+        return new ResponseEntity<String>("인증 코드를 올바르게 입력해주세요.", HttpStatus.BAD_REQUEST);
     }
 }

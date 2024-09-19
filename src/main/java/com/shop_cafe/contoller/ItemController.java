@@ -2,9 +2,15 @@ package com.shop_cafe.contoller;
 
 import com.shop_cafe.dto.ItemFormDto;
 import com.shop_cafe.dto.ItemSearchDto;
+import com.shop_cafe.dto.RecentProduct;
 import com.shop_cafe.entity.Item;
+import com.shop_cafe.entity.ItemImg;
+import com.shop_cafe.service.ItemImgService;
 import com.shop_cafe.service.ItemService;
+import com.shop_cafe.service.RecentProductService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,11 +27,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
+    private final ItemImgService itemImgService;
+    private final RecentProductService recentProductService;
+
+
     @GetMapping(value = "/admin/item/new")
     public String itemForm(Model model){
         model.addAttribute("itemFormDto",new ItemFormDto());
@@ -103,10 +114,16 @@ public class ItemController {
         return "item/itemMng";
     }
 
-    @GetMapping(value = "/item/{itemId}")
-    public String itemDtl(Model model, @PathVariable("itemId")Long itemId){
+    @GetMapping(value = "/item/{itemId}" )
+    public String itemDtl(Model model, @PathVariable("itemId")Long itemId, HttpServletRequest request, HttpServletResponse response){
         ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
         model.addAttribute("item",itemFormDto);
+
+        String recentImage = itemImgService.selectProductImageUrlByProductId(itemId);
+
+        recentProductService.saveRecentProductToCookie(itemId, response, request, recentImage, itemFormDto.getItemNm());
+
+
         return "item/itemDtl";
     }
 
@@ -114,14 +131,38 @@ public class ItemController {
     public String getItemsByCategoryId(
             @RequestParam("categoryId") Long categoryId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "8") int size,
             Model model
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ItemFormDto> itemPage = itemService.getItemsByCategory(categoryId, pageable);
+
         model.addAttribute("itemPage", itemPage);
         model.addAttribute("categoryId", categoryId);
+
         return "item/itemList"; // itemList.html 템플릿을 반환
+    }
+
+
+    @GetMapping(value = "/item/itemBest")
+    public String itemBest(Model model) {
+        int limit = 5;
+        List<Item> itemBest = itemService.getTopItems(limit);
+
+        // ID 리스트 추출
+        List<Long> itemIds = itemBest.stream()
+                .map(Item::getId)
+                .collect(Collectors.toList());
+
+        List<ItemImg> itemImages = itemService.getItemImagesByIds(itemIds); // 해당 ID에 맞는 이미지 가져오기
+
+        model.addAttribute("itemBest", itemBest);
+        model.addAttribute("itemImages", itemImages); // 이미지 정보 추가
+        System.out.println(itemBest+"베스트아이탬");
+        System.out.println(itemImages+"아이탬이미지");
+        System.out.println("break");
+        return "item/itemBest";
+
     }
 
 }

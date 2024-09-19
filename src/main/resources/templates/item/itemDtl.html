@@ -7,7 +7,6 @@
     <!--**************결제 시스템 자바스크립트****************** -->
     <!--포트원 SDK import-->
     <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
-    <script src="/js/Kakao.js"></script>
     <script src="/js/KGInigis.js"></script>
 </head>
 
@@ -174,7 +173,7 @@
                         onclick="addCart()">
                     장바구니 담기</button>
                 <!--<button type="button" class="btn btn-primary btn-lg" onclick="order()">주문하기</button>-->
-                <button type="button" class="btn btn-primary btn-lg" id="KGInigis" onclick="order()" >주문하기</button>
+                <button type="button" class="btn btn-primary btn-lg" id="KGInigis"  >주문하기</button>
             </div>
             <div th:unless="${item.itemSellStatus == T(com.shop_cafe.constant.ItemSellStatus).SELL}"
                  class="text-right">

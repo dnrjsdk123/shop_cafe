@@ -152,6 +152,9 @@ public class OrderController {
             // 장바구니 아이템 삭제
             cartService.deleteCartItemsAfterOrder(orderDtos);
         } catch (Exception e) {
+            System.out.println("주문 처리 중 오류 발생: " + e.getMessage());
+            e.printStackTrace();
+
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("status", "error");
             errorResponse.put("message", "주문 처리 중 오류 발생");
